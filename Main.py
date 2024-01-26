@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import tkinter as tk
+from tkinter import ttk, messagebox
 
 
 
@@ -8,7 +9,34 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
 #Local Databases
-users = [{"Username": "1", "Password": "1"}]
+users = [{"Username": "admin", "Password": "admin"},{"Username": "1", "Password": "1"}]
+students = [
+    ('John Doe', 'Engineering', 1, 'john@example.com', '123 Main St'),
+    ('Alice Smith', 'Physics', 5, 'alice@example.com', '456 Oak St'),
+    ('Bob Johnson', 'Computer Science', 2, 'bob@example.com', '789 Maple St'),
+    ('Emma Brown', 'Mathematics', 1, 'emma@example.com', '101 Pine St'),
+    ('Charlie Davis', 'Biology', 3, 'charlie@example.com', '202 Cedar St'),
+    ('Eva White', 'Chemistry', 4, 'eva@example.com', '303 Birch St'),
+    ('Frank Miller', 'History', 2, 'frank@example.com', '404 Elm St'),
+    ('Grace Turner', 'Geology', 7, 'grace@example.com', '505 Spruce St'),
+    ('Henry Wilson', 'Statistics', 5, 'henry@example.com', '606 Oakwood St'),
+    ('Ivy Robinson', 'Environmental Science', 3, 'ivy@example.com', '707 Pine Lane'),
+    ('Jack Evans', 'Political Science', 4, 'jack@example.com', '808 Maple Lane'),
+    ('Katherine Hall', 'Sociology', 6, 'katherine@example.com', '909 Cedar Lane'),
+    ('Liam Mitchell', 'Economics', 2, 'liam@example.com', '1010 Birch Lane'),
+    ('Mia Turner', 'English', 4, 'mia@example.com', '1111 Elm Lane'),
+    ('Noah Wright', 'Psychology', 1, 'noah@example.com', '1212 Spruce Lane'),
+    ('Olivia Reed', 'Philosophy', 6, 'olivia@example.com', '1313 Oakwood Lane'),
+    ('Peter Foster', 'Art History', 8, 'peter@example.com', '1414 Maplewood Lane'),
+    ('Quinn Parker', 'Communication', 7, 'quinn@example.com', '1515 Cedarwood Lane'),
+    ('Rachel Hayes', 'Music', 11, 'rachel@example.com', '1616 Birchwood Lane'),
+    ('Samuel White', 'Math Education', 14, 'samuel@example.com', '1717 Elmwood Lane')
+]
+
+# Print the generated students
+for student in students:
+    print(student)
+
 items = []
 todos = {}
 
@@ -16,102 +44,81 @@ root = ctk.CTk()
 root.geometry("600x500")
 root.title("Login/Register")
 
-new_fname = "a"
+new_fname = "default"
+
+style = ttk.Style(root)
+style.configure("Treeview", background="#414a4c", 
+                fieldbackground="black", foreground="white")
+
+style.configure("Treeview.Heading", background="lightgreen", 
+                foreground="black", relief="flat")
+
 
 if not new_fname:
     new_fname = "John"
 
-def FeedUI( login_frame=None, username=None, settings_frame=None):
+def FeedUI(login_frame=None, username=None, settings_frame=None):
     if login_frame:
-        print("True")
         login_frame.destroy()
-    if settings_frame:
-        print("True")
-        settings_frame.destroy()
-        feed_frame = ctk.CTkFrame(master=root)
+
+    if username:
+        root.geometry("1000x500")
+        feed_frame = ctk.CTkFrame(root)
         feed_frame.pack(fill="both", expand=True)
 
-        screen_name = ctk.CTkLabel(master=feed_frame, text=f"{new_fname}", font=("Roboto", 15))
+        screen_name = tk.Label(feed_frame, text=f"{new_fname}", font=("Roboto", 15))
         screen_name.pack(pady=20, padx=10)
         screen_name.place(relx=0.66, rely=0.1, anchor=tk.CENTER)
 
-        logout_button = ctk.CTkButton(master=feed_frame, text="Logout", height=30, width=80,command=lambda: logoutHandler(root, register_frame, feed_frame), font=("Roboto", 15),
-                                    fg_color="#BB85FF", text_color="black", hover_color="#dabfff")
-        logout_button.pack(pady=12, padx=10)
-        logout_button.place(relx=0.78, rely=0.1, anchor=tk.CENTER)
+        # logout_button = tk.Button(feed_frame, text="Logout", height=30, width=80,
+                                  
+        #                           font=("Roboto", 15), fg="#BB85FF", bg="white", activebackground="#dabfff")
+        # logout_button.pack(pady=12, padx=10)
+        # logout_button.place(relx=0.78, rely=0.1, anchor=tk.CENTER)
 
-        setting_button = ctk.CTkButton(master=feed_frame, text="⚙️", height=30, width=40, font=("Roboto", 15), fg_color="#BB85FF", text_color="black", hover_color="#dabfff", command=lambda: SettingsUI(root=root, feed_frame=feed_frame, username=username))
-        setting_button.pack(pady=12, padx=10)
-        setting_button.place(relx=0.90, rely=0.1, anchor=tk.CENTER)
-
-        label = ctk.CTkLabel(master=feed_frame, text=f"Hi {new_fname}, hope you doing well", font=("Roboto", 15))
+        label = tk.Label(feed_frame, text=f"Hi {new_fname}, hope you're doing well", font=("Roboto", 15))
         label.pack(pady=20, padx=10)
         label.place(relx=0.2, rely=0.1, anchor=tk.CENTER)
 
-        darkmode = ctk.CTkSwitch(feed_frame, width=80, text="LightMode", command=lambda: toggle_dark_mode(darkmode))
-        darkmode.pack()
-        darkmode.place(relx=0.15, rely=0.27, anchor=tk.CENTER)
+        global student_tree, search_entry
 
-        title_label = ctk.CTkLabel(feed_frame, text="Daily Tasks", font=ctk.CTkFont(size=30, weight="bold"))
-        title_label.pack(padx=10, pady=(100, 20))
+        show_button = ctk.CTkButton(feed_frame, text="Show Students", command=show_students_in_treeview)
+        show_button.place(relx=0.3, rely=0.2, anchor=tk.CENTER)
 
-        scrollable_frame = ctk.CTkScrollableFrame(feed_frame, width=500, height=200)
-        scrollable_frame.pack()
+        search_entry = ctk.CTkEntry(feed_frame)
+        search_entry.pack()
+        search_entry.place(relx=0.1, rely=0.2, anchor=tk.CENTER)
+        search_button = ctk.CTkButton(feed_frame, text="Search Students", command=search_students)
+        search_button.place(relx=0.2, rely=0.2, anchor=tk.CENTER)
 
-        entry = ctk.CTkEntry(scrollable_frame, placeholder_text="Add todo")
-        entry.pack(fill="x")
+        sort_course_button = ctk.CTkButton(feed_frame, text="Sort by Course", command=sort_students_by_course)
+        sort_course_button.pack()
+        sort_course_button.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
-        add_button = ctk.CTkButton(feed_frame, text="Add", width=500, command=lambda: add_todo(entry, scrollable_frame))
-        add_button.pack(pady=10)
-
-        delete_all_button = ctk.CTkButton(feed_frame, text="Delete All", width=500, command=lambda: delete_all(scrollable_frame))
-        delete_all_button.pack()
-        
-    if username:  
-        feed_frame = ctk.CTkFrame(master=root)
-        feed_frame.pack(fill="both", expand=True)
-
-        screen_name = ctk.CTkLabel(master=feed_frame, text=f"{new_fname}", font=("Roboto", 15))
-        screen_name.pack(pady=20, padx=10)
-        screen_name.place(relx=0.66, rely=0.1, anchor=tk.CENTER)
-
-        logout_button = ctk.CTkButton(master=feed_frame, text="Logout", height=30, width=80,command=lambda: logoutHandler(root, register_frame, feed_frame), font=("Roboto", 15),
-                                    fg_color="#BB85FF", text_color="black", hover_color="#dabfff")
-        logout_button.pack(pady=12, padx=10)
-        logout_button.place(relx=0.78, rely=0.1, anchor=tk.CENTER)
-
-        setting_button = ctk.CTkButton(master=feed_frame, text="⚙️", height=30, width=40, font=("Roboto", 15), fg_color="#BB85FF", text_color="black", hover_color="#dabfff", command=lambda: SettingsUI(root=root, feed_frame=feed_frame, username=username))
-        setting_button.pack(pady=12, padx=10)
-        setting_button.place(relx=0.90, rely=0.1, anchor=tk.CENTER)
-
-        label = ctk.CTkLabel(master=feed_frame, text=f"Hi {new_fname}, hope you doing well", font=("Roboto", 15))
-        label.pack(pady=20, padx=10)
-        label.place(relx=0.2, rely=0.1, anchor=tk.CENTER)
-
-        
-        # delete_todo = ctk.CTkEntry(feed_frame, width=70)
-        # delete_todo.pack()
-        # delete_todo.place(relx=0.13, rely=0.27, anchor=tk.CENTER)
-
-        darkmode = ctk.CTkSwitch(feed_frame, width=80, text="LightMode", command=lambda: toggle_dark_mode(darkmode))
-        darkmode.pack()
-        darkmode.place(relx=0.15, rely=0.27, anchor=tk.CENTER)
-
-        title_label = ctk.CTkLabel(feed_frame, text="Daily Tasks", font=ctk.CTkFont(size=30, weight="bold"))
-        title_label.pack(padx=10, pady=(100, 20))
+        sort_year_button = ctk.CTkButton(feed_frame, text="Sort by Year", command=sort_students_by_year)
+        sort_year_button.pack()
+        sort_year_button.place(relx=0.6, rely=0.2, anchor=tk.CENTER)
 
 
-        scrollable_frame = ctk.CTkScrollableFrame(feed_frame, width=500, height=200)
-        scrollable_frame.pack()
+        student_tree = ttk.Treeview(feed_frame, columns=('Name', 'Course', 'Year', 'Email', 'Address'), 
+        show='headings')
+        student_tree.heading('Name', text='Name')
+        student_tree.heading('Course', text='Course')
+        student_tree.heading('Year', text='Year')
+        student_tree.heading('Email', text='Email')
+        student_tree.heading('Address', text='Address')
+        student_tree.pack(pady=10, padx=10)
+        student_tree.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
 
-        entry = ctk.CTkEntry(scrollable_frame, placeholder_text="Add todo")
-        entry.pack(fill="x")
+        student_tree.tag_configure('Name', background='#add8e6')
 
-        add_button = ctk.CTkButton(feed_frame, text="Add", width=500, command=lambda: add_todo(entry, scrollable_frame))
-        add_button.pack(pady=10)
+        student_tree.column('Name', width=150)
+        student_tree.column('Course', width=150)
+        student_tree.column('Year', width=50)  # Adjust the width as needed
+        student_tree.column('Email', width=200)
+        student_tree.column('Address', width=250)
 
-        delete_all_button = ctk.CTkButton(feed_frame, text="Delete All", width=500, command=lambda: delete_all(scrollable_frame))
-        delete_all_button.pack()
+        show_students_in_treeview()
 
 def SettingsUI(root=root, feed_frame=None, username=None, uPass=None, uE=None, uLn=None, uFn=None, uName=None):
     if feed_frame:
@@ -240,30 +247,31 @@ def RegisterUI(root, login_frame):
     register_frame = ctk.CTkFrame(master=root)
     register_frame.pack( fill="both", expand=True)
 
-    label = ctk.CTkLabel(master=register_frame, text="Register", font=("Roboto", 20))
+    label = ctk.CTkLabel(master=register_frame, text="Student Register", font=("Roboto", 20))
     label.pack(pady=20, padx=10)
 
-    new_first_name = ctk.CTkEntry(master=register_frame, placeholder_text="First Name", height=40, width=250, font=("Roboto", 15))
-    new_first_name.pack(pady=12, padx=10)
-    new_first_name.place(relx=0.1, rely=0.2)
+    global name_entry, course_entry, year_entry, email_entry, address_entry
+    name_entry = ctk.CTkEntry(master=register_frame, placeholder_text="Name", height=40, width=250, font=("Roboto", 15))
+    name_entry.pack(pady=12, padx=10)
+    name_entry.place(relx=0.1, rely=0.2)
 
-    new_last_name = ctk.CTkEntry(master=register_frame, placeholder_text="Last Name", height=40, width=250, font=("Roboto", 15))
-    new_last_name.pack(pady=12, padx=10)
-    new_last_name.place(relx=0.55, rely=0.2)
+    year_entry = ctk.CTkEntry(master=register_frame, placeholder_text="Year", height=40, width=250, font=("Roboto", 15))
+    year_entry.pack(pady=12, padx=10)
+    year_entry.place(relx=0.55, rely=0.2)
 
-    new_email = ctk.CTkEntry(master=register_frame, placeholder_text="Email", height=40, width=520, font=("Roboto", 15))
-    new_email.pack(pady=12, padx=10)
-    new_email.place(relx=0.1, rely=0.3)
+    course_entry = ctk.CTkEntry(master=register_frame, placeholder_text="Course", height=40, width=520, font=("Roboto", 15))
+    course_entry.pack(pady=12, padx=10)
+    course_entry.place(relx=0.1, rely=0.3)
 
-    new_username = ctk.CTkEntry(master=register_frame, placeholder_text="New Username", height=40, width=520, font=("Roboto", 15))
-    new_username.pack(pady=12, padx=10)
-    new_username.place(relx=0.1, rely=0.4)
+    email_entry = ctk.CTkEntry(master=register_frame, placeholder_text="Email", height=40, width=520, font=("Roboto", 15))
+    email_entry.pack(pady=12, padx=10)
+    email_entry.place(relx=0.1, rely=0.4)
 
-    new_password = ctk.CTkEntry(master=register_frame, placeholder_text="New Password", show="*", height=40, width=520, font=("Roboto", 15))
-    new_password.pack(pady=12, padx=10)
-    new_password.place(relx=0.1, rely=0.5)
+    address_entry = ctk.CTkEntry(master=register_frame, placeholder_text="Address", show="*", height=40, width=520, font=("Roboto", 15))
+    address_entry.pack(pady=12, padx=10)
+    address_entry.place(relx=0.1, rely=0.5)
 
-    register_button = ctk.CTkButton(master=register_frame, text="Register", command=lambda: registerHandler(root, new_username, new_password, new_first_name, new_last_name, new_email), height=40, width=520, font=("Roboto", 15))
+    register_button = ctk.CTkButton(master=register_frame, text="Submit", command=submit)
     register_button.pack(pady=12, padx=10)
     register_button.place(relx=0.1, rely=0.6)
 
@@ -271,6 +279,50 @@ def RegisterUI(root, login_frame):
     back_button.pack(pady=12, padx=10)
     back_button.place(relx=0.1, rely=0.7)
 
+def submit():
+    name = name_entry.get()
+    course = course_entry.get()
+    year = year_entry.get()
+    email = email_entry.get()
+    address = address_entry.get()
+
+    if name and course and year and email and address:
+        student_info = (name, course, year, email, address)
+        students.append(student_info)
+        clear_entries()
+        messagebox.showinfo("Success", "Student registered successfully!")
+        show_students_in_treeview()
+    else:
+        messagebox.showwarning("Incomplete Information", "Please fill in all fields.")
+
+def clear_entries():
+    name_entry.delete(0, tk.END)
+    course_entry.delete(0, tk.END)
+    year_entry.delete(0, tk.END)
+    email_entry.delete(0, tk.END)
+    address_entry.delete(0, tk.END)
+
+def show_students_in_treeview():
+    student_tree.delete(*student_tree.get_children())
+    for student in students:
+        student_tree.insert('', 'end', values=student)
+
+def search_students():
+    search_term = search_entry.get().lower()
+    results = [student for student in students if search_term in str(student).lower()]
+    student_tree.delete(*student_tree.get_children())
+    for result in results:
+        student_tree.insert('', 'end', values=result)
+
+def sort_students_by_course():
+    students.sort(key=lambda x: x[1])
+    show_students_in_treeview()
+
+def sort_students_by_year():
+    students.sort(key=lambda x: x[2])  
+    show_students_in_treeview()
+
+    
 def logoutHandler(root, register_frame, feed_frame):
     yes = messagebox.askyesno(message="Do you want to logout?")
     if yes: 
@@ -384,19 +436,7 @@ def toggle_dark_mode(switch):
     else:
         ctk.set_appearance_mode("dark")   
 
-def delete_all(scrollable_frame):
-    for label in todos:
-        label.destroy() 
-    todos.clear()
 
-def add_todo(entry, scrollable_frame):
-    todo = entry.get()
-    if todo:
-        label = ctk.CTkLabel(scrollable_frame, text=todo)
-        label.pack()
-        todos[label] = todo  # Store the label in the dictionary
-        entry.delete(0, ctk.END)
-    
 
 LogInUI(root, None, None)
 root.mainloop()
