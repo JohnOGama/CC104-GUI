@@ -48,7 +48,7 @@ new_fname = "default"
 
 style = ttk.Style(root)
 style.configure("Treeview", background="#414a4c", 
-                fieldbackground="black", foreground="white")
+                fieldbackground="white", foreground="white")
 
 style.configure("Treeview.Heading", background="lightgreen", 
                 foreground="black", relief="flat")
@@ -56,48 +56,46 @@ style.configure("Treeview.Heading", background="lightgreen",
 
 if not new_fname:
     new_fname = "John"
+    
+register_frame = None
 
 def FeedUI(login_frame=None, username=None, settings_frame=None):
     if login_frame:
         login_frame.destroy()
 
     if username:
-        root.geometry("1000x500")
+        root.geometry("600x500")
         feed_frame = ctk.CTkFrame(root)
         feed_frame.pack(fill="both", expand=True)
 
-        screen_name = tk.Label(feed_frame, text=f"{new_fname}", font=("Roboto", 15))
-        screen_name.pack(pady=20, padx=10)
-        screen_name.place(relx=0.66, rely=0.1, anchor=tk.CENTER)
+        left_label = ctk.CTkLabel(feed_frame, text="Admin",font=("Roboto", 20))
+        left_label.pack()
+        left_label.place(relx=0.1, rely=0.1, anchor=tk.CENTER)
+        logout_button = ctk.CTkButton(feed_frame, text="Log out", width=60, fg_color="red", hover_color="gray", command=lambda: logoutHandler(root,feed_frame,register_frame))
+        logout_button.pack(pady=12, padx=10)
+        logout_button.place(relx=0.9, rely=0.1, anchor=tk.CENTER)
 
-        # logout_button = tk.Button(feed_frame, text="Logout", height=30, width=80,
-                                  
-        #                           font=("Roboto", 15), fg="#BB85FF", bg="white", activebackground="#dabfff")
-        # logout_button.pack(pady=12, padx=10)
-        # logout_button.place(relx=0.78, rely=0.1, anchor=tk.CENTER)
-
-        label = tk.Label(feed_frame, text=f"Hi {new_fname}, hope you're doing well", font=("Roboto", 15))
-        label.pack(pady=20, padx=10)
-        label.place(relx=0.2, rely=0.1, anchor=tk.CENTER)
-
+        title = ctk.CTkLabel(master=settings_frame, text="Registered Students", font=("Roboto", 24))
+        title.pack()
+        title.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
         global student_tree, search_entry
 
-        show_button = ctk.CTkButton(feed_frame, text="Show Students", command=show_students_in_treeview)
-        show_button.place(relx=0.3, rely=0.2, anchor=tk.CENTER)
+        show_button = ctk.CTkButton(feed_frame, text="Show all", command=show_students_in_treeview,width=80)
+        show_button.place(relx=0.12, rely=0.8, anchor=tk.CENTER)
 
-        search_entry = ctk.CTkEntry(feed_frame)
+        search_entry = ctk.CTkEntry(feed_frame, width=140, placeholder_text="Search Student")
         search_entry.pack()
-        search_entry.place(relx=0.1, rely=0.2, anchor=tk.CENTER)
-        search_button = ctk.CTkButton(feed_frame, text="Search Students", command=search_students)
-        search_button.place(relx=0.2, rely=0.2, anchor=tk.CENTER)
+        search_entry.place(relx=0.174, rely=0.4, anchor=tk.CENTER)
+        search_button = ctk.CTkButton(feed_frame, width=70, text="Search", command=search_students)
+        search_button.place(relx=0.36, rely=0.4, anchor=tk.CENTER)
 
-        sort_course_button = ctk.CTkButton(feed_frame, text="Sort by Course", command=sort_students_by_course)
+        sort_course_button = ctk.CTkButton(feed_frame, text="Sort by Course", command=sort_students_by_course,width=110)
         sort_course_button.pack()
-        sort_course_button.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+        sort_course_button.place(relx=0.70, rely=0.4, anchor=tk.CENTER)
 
-        sort_year_button = ctk.CTkButton(feed_frame, text="Sort by Year", command=sort_students_by_year)
+        sort_year_button = ctk.CTkButton(feed_frame, text="Sort by Year", command=sort_students_by_year,width=70)
         sort_year_button.pack()
-        sort_year_button.place(relx=0.6, rely=0.2, anchor=tk.CENTER)
+        sort_year_button.place(relx=0.875, rely=0.4, anchor=tk.CENTER)
 
 
         student_tree = ttk.Treeview(feed_frame, columns=('Name', 'Course', 'Year', 'Email', 'Address'), 
@@ -213,7 +211,7 @@ def SettingsUI(root=root, feed_frame=None, username=None, uPass=None, uE=None, u
         back_button.pack()
         back_button.place(relx=0.2, rely=0.1, anchor=tk.CENTER)
 
-def LogInUI(root, register_frame,feed_frame, settings_frame=None ):
+def LogInUI(root,feed_frame,  register_frame=None,settings_frame=None ):
     if register_frame:
         register_frame.destroy()
     if feed_frame:
@@ -237,7 +235,7 @@ def LogInUI(root, register_frame,feed_frame, settings_frame=None ):
     login_button = ctk.CTkButton(master=login_frame, text="Login", command=lambda: login(root, username_entry, password_entry), height=40, width=200, font=("Roboto", 15))
     login_button.pack(pady=12, padx=10)
 
-    register_button = ctk.CTkButton(master=login_frame, text="Register", command=lambda: RegisterUI(root, login_frame), height=40, width=200, font=("Roboto", 15))
+    register_button = ctk.CTkButton(master=login_frame, text="Student Registration", command=lambda: RegisterUI(root, login_frame), height=40, width=200, font=("Roboto", 15))
     register_button.pack(pady=12, padx=10)
 
 def RegisterUI(root, login_frame):
@@ -267,15 +265,15 @@ def RegisterUI(root, login_frame):
     email_entry.pack(pady=12, padx=10)
     email_entry.place(relx=0.1, rely=0.4)
 
-    address_entry = ctk.CTkEntry(master=register_frame, placeholder_text="Address", show="*", height=40, width=520, font=("Roboto", 15))
+    address_entry = ctk.CTkEntry(master=register_frame, placeholder_text="Address", height=40, width=520, font=("Roboto", 15))
     address_entry.pack(pady=12, padx=10)
     address_entry.place(relx=0.1, rely=0.5)
 
-    register_button = ctk.CTkButton(master=register_frame, text="Submit", command=submit)
+    register_button = ctk.CTkButton(master=register_frame, text="Submit", command=submit,height=40, width=520)
     register_button.pack(pady=12, padx=10)
     register_button.place(relx=0.1, rely=0.6)
 
-    back_button = ctk.CTkButton(master=register_frame, text="Back to Login", command=lambda: LogInUI(root, register_frame, None, None), height=40, width=520, font=("Roboto", 15))
+    back_button = ctk.CTkButton(master=register_frame, text="Back to Admin", command=lambda: LogInUI(root, register_frame, None, None), height=40, width=520, font=("Roboto", 15))
     back_button.pack(pady=12, padx=10)
     back_button.place(relx=0.1, rely=0.7)
 
@@ -319,7 +317,7 @@ def sort_students_by_course():
     show_students_in_treeview()
 
 def sort_students_by_year():
-    students.sort(key=lambda x: x[2])  
+    students.sort(key=lambda x: int(x[2]))  
     show_students_in_treeview()
 
     
